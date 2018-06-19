@@ -4,6 +4,34 @@ const app = express()
 
 app.use(bodyParser.json())
 
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+
+const sendAlarm = (vtimeout, client) => {
+  let timeout //real timeout
+  const date = new Date()
+  const day = date.getDay()
+  if (day === 0) timeout =2*vtimeout
+  if (day === 6) timeout =vtimeout*(4/3)
+  if (day >0 && day <6) timeout=vtimeout
+  setTimeout(()=>{
+    client.emit('ring',vDaysLeft())
+    sendAlarm(vtimeout, client)
+  }, timeout*24*3600*1000)
+}
+
+io.on('connection',(client)=> {
+  console.log('A user is connected');
+
+  client.on('alarm', data => {
+    sendAlarm(data, client)
+  })
+  client.on('disconnect', ()=> {
+    console.log('A user got disconnected');
+  })
+});
+
+
 const sundaysLeft = (days) => {
   const rest = days%7
   const k = Math.floor((days-rest)/7)
@@ -52,4 +80,4 @@ app.get('/days-left', (request, response) => {
   response.send({vdays:vDaysLeft()})
 })
 
-app.listen(4001, () => console.log('Express API listening on port 4001'))
+server.listen(4001, () => console.log('Express API listening on port 4001'))
