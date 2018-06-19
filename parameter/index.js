@@ -13,7 +13,7 @@ const sleepTime = () => {
     sleepFor = r*(4/3)*24*3600*1000
   if (day>0 && day<6)
     sleepFor = r*24*3600*1000
-  return 7000
+  return sleepFor
 }
 
 const parameter = () =>
