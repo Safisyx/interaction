@@ -17,7 +17,7 @@ const sendAlarm = (vtimeout, client) => {
   setTimeout(()=>{
     client.emit('ring',vDaysLeft())
     sendAlarm(vtimeout, client)
-  }, 5000)
+  }, timeout*24*3600*1000)
 }
 
 io.on('connection',(client)=> {
